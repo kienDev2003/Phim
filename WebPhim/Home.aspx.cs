@@ -11,24 +11,44 @@ namespace WebPhim
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            radPhimChieuRap.Checked = true;
-            LoadPhimChieuRap();
+            string pass = (string)Session["pass"];
+            if (pass == "kienDev2003.,.@")
+            {
+                radPhim18.Checked = true;
+                LoadPhim18();
+            }
+            else if(pass != null && pass != "kienDev2003.,.@")
+            {
+                Response.Write("<script>\r\n    alert(\"Sai pass rồi bạn ơi !\");\r\n</script>");
+                radPhimChieuRap.Checked = true;
+                LoadPhimChieuRap();
+            }
+            else
+            {
+                radPhimChieuRap.Checked = true;
+                LoadPhimChieuRap();
+            }
+
+            
+            
         }
 
         protected void radPhim18_Click(object sender, EventArgs e)
         {
             radPhimChieuRap.Checked = false;
 
-            string html_Check = "<script>\r\n    var start = false;\r\n    do {\r\n        var pass = \"kienDev2003.,.@\";\r\n        var passInput = prompt(\"Nhập pass rồi vào nhé !\");\r\n        if(pass == passInput){\r\n            start = true;\r\n        }\r\n    } while (start == false);\r\n</script>";
-            Response.Write(html_Check);
-
-            LoadPhim18();
+            Response.Redirect("./Pass.aspx");
         }
 
         protected void radPhimChieuRap_Click(object sender, EventArgs e)
         {
             radPhim18.Checked = false;
             LoadPhimChieuRap();
+        }
+
+        protected void btnTimKiem_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("https://google.com");
         }
 
         private void LoadPhim18()
@@ -40,7 +60,6 @@ namespace WebPhim
             foreach (var content in listVideos)
             {
                 string htmlContent = $"<li class=\"item-movie\"><a title=\"{content.name}\" href=\"{content.link_video}\"><div class=\"image\"><div class=\"movie-thumbnail\" style=\"background-image:url('{content.link_image}')\"></div></div><div class=\"title-movie\">{content.name}</div><div></div></a></li>";
-
                 LiteralControl literalControl = new LiteralControl(htmlContent);
                 ul_list_phim.Controls.Add(literalControl);
             }

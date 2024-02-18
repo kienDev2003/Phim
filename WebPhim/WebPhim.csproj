@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Home.aspx" />
+    <Content Include="Pass.aspx" />
     <Content Include="Style.css" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -97,6 +98,13 @@
     </Compile>
     <Compile Include="ListVideo.cs" />
     <Compile Include="LoadPhim.cs" />
+    <Compile Include="Pass.aspx.cs">
+      <DependentUpon>Pass.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pass.aspx.designer.cs">
+      <DependentUpon>Pass.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

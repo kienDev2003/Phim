@@ -11,52 +11,34 @@ namespace WebPhim
 {
 
 
-    public partial class Home
+    public partial class Pass
     {
 
         /// <summary>
-        /// radPhimChieuRap control.
+        /// form1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton radPhimChieuRap;
+        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// radPhim18 control.
+        /// txtPass control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton radPhim18;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText txtPass;
 
         /// <summary>
-        /// txtTk control.
+        /// btnPass control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtTk;
-
-        /// <summary>
-        /// btnTk control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputButton btnTk;
-
-        /// <summary>
-        /// ul_list_phim control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl ul_list_phim;
+        protected global::System.Web.UI.HtmlControls.HtmlInputButton btnPass;
     }
 }

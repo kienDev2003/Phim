@@ -28,12 +28,13 @@
                 </li>
             </div>
             <div id="formTimKiem">
-                <input style="font-size: 20px;" type="text" id="txtTk" placeholder="Nhập tên phim">
-                <input style="font-size: 15px;" type="button" id="btnTk" value="Tìm kiếm">
+                <input style="font-size: 20px;" type="text" id="txtTk" placeholder="Nhập tên phim" runat="server">
+                <input style="font-size: 15px;" type="button" id="btnTk" value="Tìm kiếm" runat="server" onserverclick="btnTimKiem_Click">
             </div>
         </div>
         <div>
             <ul style="float:left" class="list-movies" id="ul_list_phim" runat="server">
+                
             </ul>
         </div>
         <div id="footer" style="width: 60%; margin: auto;">

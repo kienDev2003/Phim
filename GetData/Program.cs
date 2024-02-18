@@ -32,11 +32,11 @@ namespace GetData
             Console.WriteLine("Chọn: 2 Để lấy video Phim Chiếu Rạp");
             string mode = Console.ReadLine();
 
-            if(mode == "1") GetDataPhim18(url_Phim18,soPage_Phim18,strConn);
-            else if(mode == "2") GetDataPhimCR(url_PhimCR,soPage_PhimCR,strConn);
+            if (mode == "1") GetDataPhim18(url_Phim18, soPage_Phim18, strConn);
+            else if (mode == "2") GetDataPhimCR(url_PhimCR, soPage_PhimCR, strConn);
         }
 
-        private static void GetDataPhim18(string url,int soPage,string strConn)
+        private static void GetDataPhim18(string url, int soPage, string strConn)
         {
             using (SQLiteConnection conn = new SQLiteConnection(strConn))
             {
@@ -50,12 +50,17 @@ namespace GetData
                         Console.WriteLine("Xóa table Phim18");
                     }
                 }
+
+                ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService();
+                chromeDriverService.HideCommandPromptWindow = true;
+
+                ChromeOptions chromeOptions = new ChromeOptions();
+                chromeOptions.AddArgument("--headless");
+
+                IWebDriver web = new ChromeDriver(chromeDriverService, chromeOptions);
+
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-                    webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0");
-                    webClient.Headers.Add("Cookie", "__PPU___PPU_SESSION_URL=%2F; _ga_RVVM14MNPL=GS1.1.1708187167.1.0.1708187167.0.0.0; _ga=GA1.1.1089087779.1708187168; bnState_1983360={\"impressions\":2,\"delayStarted\":0}");
-
                     webClient.Encoding = Encoding.UTF8;
                     for (int i = 1; i <= soPage; i++)
                     {
@@ -76,50 +81,42 @@ namespace GetData
                                 var iamge = db.Descendants("div").Where(image => image.Attributes.Contains("class") && image.Attributes["class"].Value == "movie-thumbnail").FirstOrDefault();
                                 string linkImage = iamge.Attributes["style"].Value.Replace("background-image:url('", "").Replace("')", "");
 
-                                ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService();
-                                chromeDriverService.HideCommandPromptWindow = true;
+                                web.Navigate().GoToUrl(linkTitle);
 
-                                ChromeOptions chromeOptions = new ChromeOptions();
-                                chromeOptions.AddArgument("--headless");
+                                WebDriverWait wait = new WebDriverWait(web, TimeSpan.FromSeconds(10));
+                                wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
 
-                                using (IWebDriver web = new ChromeDriver(chromeDriverService, chromeOptions))
+                                string htmlContent = web.PageSource;
+
+                                web.Quit();
+
+                                HtmlDocument doc = new HtmlDocument();
+                                doc.LoadHtml(htmlContent);
+
+                                var ifarme = doc.DocumentNode.Descendants("div").Where(_ifarme => _ifarme.Attributes.Contains("class") && _ifarme.Attributes["class"].Value == "pframe").FirstOrDefault();
+                                string link_video = "";
+                                try
                                 {
-                                    web.Navigate().GoToUrl(linkTitle);
+                                    var div = doc.DocumentNode.Descendants("div").Where(_div => _div.Attributes.Contains("id") && _div.Attributes["id"].Value == "video").FirstOrDefault();
+                                    var iframe = div.Descendants("iframe").FirstOrDefault();
+                                    link_video = iframe.Attributes["src"].Value;
+                                }
+                                catch (Exception ex)
+                                {
+                                    link_video = "";
+                                }
 
-                                    WebDriverWait wait = new WebDriverWait(web, TimeSpan.FromSeconds(10));
-                                    wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+                                string query = "INSERT INTO tblPhim18 VALUES (@name,@linkImage,@linkVideo)";
+                                using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("@name", title);
+                                    cmd.Parameters.AddWithValue("@linkImage", linkImage);
+                                    cmd.Parameters.AddWithValue("@linkVideo", link_video);
 
-                                    string htmlContent = web.PageSource;
-                                    web.Quit();
-
-                                    HtmlDocument doc = new HtmlDocument();
-                                    doc.LoadHtml(htmlContent);
-
-                                    var ifarme = doc.DocumentNode.Descendants("div").Where(_ifarme => _ifarme.Attributes.Contains("class") && _ifarme.Attributes["class"].Value == "pframe").FirstOrDefault();
-                                    string link_video = "";
-                                    try
+                                    int check = cmd.ExecuteNonQuery();
+                                    if (check > 0)
                                     {
-                                        var div = doc.DocumentNode.Descendants("div").Where(_div => _div.Attributes.Contains("id") && _div.Attributes["id"].Value == "video").FirstOrDefault();
-                                        var iframe = div.Descendants("iframe").FirstOrDefault();
-                                        link_video = iframe.Attributes["src"].Value;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        link_video = "";
-                                    }
-
-                                    string query = "INSERT INTO tblPhim18 VALUES (@name,@linkImage,@linkVideo)";
-                                    using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
-                                    {
-                                        cmd.Parameters.AddWithValue("@name", title);
-                                        cmd.Parameters.AddWithValue("@linkImage", linkImage);
-                                        cmd.Parameters.AddWithValue("@linkVideo", link_video);
-
-                                        int check = cmd.ExecuteNonQuery();
-                                        if (check > 0)
-                                        {
-                                            Console.WriteLine("Add Done");
-                                        }
+                                        Console.WriteLine("Add Done");
                                     }
                                 }
                             }
@@ -129,7 +126,7 @@ namespace GetData
             }
         }
 
-        private static void GetDataPhimCR(string url,int soPage,string strConn)
+        private static void GetDataPhimCR(string url, int soPage, string strConn)
         {
             using (SQLiteConnection conn = new SQLiteConnection(strConn))
             {
